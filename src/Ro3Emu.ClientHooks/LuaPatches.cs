@@ -100,6 +100,8 @@ namespace Ro3Emu.ClientHooks
                 var functionHelper = Module(manager, global, "lc_functionhelper");
                 FeedbackButton.Install(global, functionHelper);
                 PassChallenges.Install(global);
+                TitleStats.Install(manager, global);
+                ProfileTitle.Install(manager, global);
                 TitleButton.Install(manager, global);
                 ServerDayGates.Install(global, functionHelper, Module(manager, global, "lc_conditiondefine"),
                     global.Obf_RuA<Obf_R.Obf_ff>("LC_SeasonHelper") ?? Module(manager, global, "lc_seasonhelper"),

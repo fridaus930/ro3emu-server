@@ -118,6 +118,13 @@ public sealed class RewardService
                 var (drops, baseExp, jobExp) = ResolveKill(player, monster, bonus);
                 // An advanced pass raises a currency's drops (PassPrivileges.CopperEffAdd).
                 drops = PassPrivileges.BoostDrops(_data, player, drops);
+                // RateBoost (inferred): an automatic boost window raises this kill's EXP and drop counts.
+                if (RateBoost.Active)
+                {
+                    drops = drops.ConvertAll(d => (d.Entry, RateBoost.Count(d.Count)));
+                    baseExp = RateBoost.Exp(baseExp);
+                    jobExp = RateBoost.Exp(jobExp);
+                }
                 outcome = new KillOutcome { Role = role, Items = drops, BaseExp = baseExp, JobExp = jobExp };
                 ShareWithParty(player, outcome);
                 if (IsExplorationHunt?.Invoke(player, monster) == true) outcome.Note = ExplorationNotes?.Choose(player);
