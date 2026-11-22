@@ -267,7 +267,12 @@ public sealed class CoreMessages(RoleSessionService roleSessions, ChatService ch
                     [Ownership.ReservationKey.Role(role.Id), Ownership.ReservationKey.Lifecycle(role.Id)], session, OwnAsync);
             else await OwnAsync();
             await guilds.ReconcileOnHeartbeatAsync();
-            await session.SendGameAsync(MsgId.Heartbeat, new Pong { ServerTimeMs = roleSessions.NowMs() });
+            // Ping.strDebugTag is the client's own tag for the round trip; Pong echoes it, and both clocks are this
+            // server's: the HUD reads sceneServerTimeMs for the scene-server leg, and a 0 there showed as "0 ms".
+            string tag = body.Length > 0 ? Ping.Parser.ParseFrom(body.ToArray()).StrDebugTag : "";
+            ulong nowMs = roleSessions.NowMs();
+            await session.SendGameAsync(MsgId.Heartbeat,
+                new Pong { ServerTimeMs = nowMs, SceneServerTimeMs = nowMs, StrDebugTag = tag });
         });
     }
 }
